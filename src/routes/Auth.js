@@ -12,7 +12,7 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [newAccount, setNewAccount] = useState(true);
-
+  const [error, setError] = useState("");
   const onChange = event => {
     const {
       target: { name, value },
@@ -29,13 +29,17 @@ const Auth = () => {
     try {
       let data;
       if (newAccount) {
-        data = await createUserWithEmailAndPassword(authService, email, password);
+        data = await createUserWithEmailAndPassword(
+          authService,
+          email,
+          password
+        );
       } else {
         data = await signInWithEmailAndPassword(authService, email, password);
       }
       console.log(data);
     } catch (error) {
-      console.log(error);
+      setError(error.message);
     }
   };
   return (
@@ -58,6 +62,7 @@ const Auth = () => {
           onChange={onChange}
         />
         <input type="submit" value={newAccount ? "Create Account" : "Log In"} />
+        {error}
       </form>
       <div>
         <button>Continue with Google</button>
