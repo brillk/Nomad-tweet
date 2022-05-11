@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { authService } from "fbase";
+import { authService, firebaseInstance } from "fbase";
 import {
-  getAuth,
-  signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  GithubAuthProvider,
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  signInWithPopup,
 } from "firebase/auth";
 
-const auth = getAuth();
 //persistance 사용자를 어떻게 기억할지 선택하게 해준다?
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -43,6 +44,20 @@ const Auth = () => {
     }
   };
   const toggleAccount = () => setNewAccount(prev => !prev);
+
+  const onSocialClick = async event => {
+    const {
+      target: { name },
+    } = event;
+    let provider;
+    if (name === "google") {
+      provider = new GoogleAuthProvider();
+    } else if (name === "github") {
+      provider = new GithubAuthProvider();
+    }
+    await signInWithPopup(authService, provider);
+  };
+
   return (
     <div>
       <form onSubmit={onSubmit}>
@@ -72,8 +87,12 @@ const Auth = () => {
         {newAccount ? "Sign in" : "Create Account"}
       </span>
       <div>
-        <button>Continue with Google</button>
-        <button>Continue with Github</button>
+        <button name="google" onClick={onSocialClick}>
+          Continue with Google
+        </button>
+        <button name="github" onClick={onSocialClick}>
+          Continue with Github
+        </button>
       </div>
     </div>
   );
